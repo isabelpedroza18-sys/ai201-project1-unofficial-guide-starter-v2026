@@ -97,7 +97,46 @@ def split_documents(documents: list[Document]) -> list[Chunk]:
       - Would splitting on paragraph breaks keep more thoughts intact than
         splitting on a character count?
     """
-    return fallback_split(documents)
+    """
+    Chunking strategy for campus_life: one whole post is one chunk.
+
+    campus_life posts are short (Milestone 1 showed 88 documents averaging
+    317 characters, longest 549) and almost always about a single topic.
+    Splitting them further would cut a complete thought in half for no
+    benefit. A generous cap (1200 characters) exists only as a safety net —
+    if a post is unusually long, it splits on paragraph breaks instead of
+    mid-sentence, rather than assuming every post stays short forever.
+    """
+    max_chunk_size = 1200
+    chunks: list[Chunk] = []
+
+    for doc in documents:
+        text = doc.text.strip()
+
+        if len(text) <= max_chunk_size:
+            chunks.append(
+                Chunk(
+                    text=text,
+                    source=doc.source,
+                    index=0,
+                    produced_by="chunker.py::split_documents",
+                )
+            )
+        else:
+            # Safety net: split on paragraph breaks so we don't cut a
+            # sentence in half if a post ever exceeds the cap.
+            paragraphs = [p.strip() for p in text.split("\n\n") if p.strip()]
+            for i, para in enumerate(paragraphs):
+                chunks.append(
+                    Chunk(
+                        text=para,
+                        source=doc.source,
+                        index=i,
+                        produced_by="chunker.py::split_documents",
+                    )
+                )
+
+    return chunks
 
 
 def describe(chunks: list[Chunk]) -> str:
