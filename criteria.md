@@ -23,8 +23,7 @@ For at least 4 of my 5 test questions, the retrieved chunks include one that
 contains the answer.
 
 **Why this target:**
-<!-- e.g. "One of my questions is about a topic only two documents mention, so
-     I expect that one to be hard." -->
+When I ran all 5 of my test questions, each one retrieved a chunk that directly contained the answer, with distances ranging from 0.305 to 0.449 — all well under my 0.6 cutoff. I set the target at 4 of 5 rather than 5 of 5 because one of my questions (library floor) pulled back some only loosely related chunks alongside the correct one, showing retrieval isn't perfectly precise even when it succeeds — so I want a little room in case a future test question turns out harder than these five.
 
 ---
 
@@ -33,10 +32,9 @@ contains the answer.
 Every answer the system produces names at least one source document.
 
 **Why this target:**
-<!-- Why all five and not four? What about your setup makes that achievable —
-     or what would have to go wrong for it not to be? -->
+The system's prompt explicitly instructs it to name the source document, and in every test I ran (5 in-scope questions plus retesting during Milestone 4), it did so consistently. Since this is enforced by instruction rather than left to chance, I expect all 5, not just 4 of 5.
 
----The system's prompt explicitly instructs it to name the source document, and in every test I ran (5 in-scope questions plus retesting during Milestone 4), it did so consistently. Since this is enforced by instruction rather than left to chance, I expect all 5, not just 4 of 5.
+---
 
 ## 3. The relevance gate stops out-of-corpus questions
 
@@ -44,30 +42,12 @@ When I ask a question my documents clearly don't cover, the relevance gate
 stops it and the system returns "I don't have enough information about that" —
 in at least 4 of 5 tries.
 
-<!-- The five questions are the ones in `OUT_OF_SCOPE` at the bottom of
-     `questions.py`, and `run_eval.py` puts them through the gate and writes
-     what happened into your run log. Swap them for your own if you'd rather —
-     just keep five of them, or the "4 of 5" above has nothing to be 4 of. -->
-
 **Why this target:**
-<!-- What did your distances look like when you set the cutoff in Milestone 4?
-     Was there a clean gap, or did the two groups overlap? -->
+When I set my cutoff in Milestone 4, my in-scope test questions had best distances of 0.345, 0.437, and 0.449, while out-of-scope questions had 0.825 and 0.896 — a clean gap of over 0.35 between the two groups, with no overlap. I kept the starter's default cutoff of 0.6 since it sits comfortably in that gap rather than close to either side.
 
----When I set my cutoff in Milestone 4, my in-scope test questions had best distances of 0.345, 0.437, and 0.449, while out-of-scope questions had 0.825 and 0.896 — a clean gap of over 0.35 between the two groups, with no overlap. I kept the starter's default cutoff of 0.6 since it sits comfortably in that gap rather than close to either side.
+---
 
 ## 4. Something about your chunks
-
-<!-- YOU WRITE THIS ONE.
-
-     How would you know if your chunks were the right size? Name something
-     countable or observable.
-
-     Examples of the right shape — don't copy these, they should come from
-     what you actually saw in Milestone 3:
-       - "At least 4 of 5 sampled chunks read as a complete thought, with no
-          sentence cut in half at either end."
-       - "No chunk is shorter than 200 characters, since anything below that
-          in my corpus turned out to be a heading with no content under it." -->
 At least 4 of 5 chunks sampled at random will discuss a single topic only, with no unrelated topic mixed in.
 
 
@@ -78,15 +58,6 @@ Looking at 5 posts early (admin_wifi_and_accounts.txt, money_jobs.txt, study_lib
 ---
 
 ## 5. Your choice
-
-<!-- YOU WRITE THIS ONE TOO.
-
-     Pick something you actually care about getting right. It could be about
-     speed, about refusals, about a particular kind of question your corpus
-     handles badly, about source attribution being correct rather than merely
-     present — anything, as long as it names a number or an observable
-     outcome. -->
-
 For 4 test questions with a specific numeric answer — credit hours to graduate, account duration after graduation, transcript cost, and transcript delivery time — the system's answer will state the exact number(s), including both the electronic and postal timeframes for the transcript question, not a rounded or vague version.
 
 **Why this target:**
