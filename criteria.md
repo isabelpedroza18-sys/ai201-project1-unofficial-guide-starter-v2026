@@ -36,7 +36,7 @@ Every answer the system produces names at least one source document.
 <!-- Why all five and not four? What about your setup makes that achievable —
      or what would have to go wrong for it not to be? -->
 
----
+---The system's prompt explicitly instructs it to name the source document, and in every test I ran (5 in-scope questions plus retesting during Milestone 4), it did so consistently. Since this is enforced by instruction rather than left to chance, I expect all 5, not just 4 of 5.
 
 ## 3. The relevance gate stops out-of-corpus questions
 
@@ -53,7 +53,7 @@ in at least 4 of 5 tries.
 <!-- What did your distances look like when you set the cutoff in Milestone 4?
      Was there a clean gap, or did the two groups overlap? -->
 
----
+---When I set my cutoff in Milestone 4, my in-scope test questions had best distances of 0.345, 0.437, and 0.449, while out-of-scope questions had 0.825 and 0.896 — a clean gap of over 0.35 between the two groups, with no overlap. I kept the starter's default cutoff of 0.6 since it sits comfortably in that gap rather than close to either side.
 
 ## 4. Something about your chunks
 

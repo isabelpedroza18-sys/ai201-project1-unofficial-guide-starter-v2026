@@ -1,6 +1,6 @@
 # The Unofficial Guide
 
-<!-- Replace this line with your name and which corpus you picked. -->
+Maria Pedroza campus_life 
 
 > **This file is your submission.** Fill it in as you go — most sections get
 > written during the milestone that produces them, not at the end.
@@ -26,11 +26,12 @@
      this repo.
 
      Milestone 5. -->
+This system is The Unofficial Guide, built on the campus_life corpus. It includes 88 short student posts covering the practical, insider details of college life that official sources leave out. It answers questions about deadlines, housing quirks, dining wait times, and financial and account details. It's built for students who want the kind of answers that usually only come from asking someone who's already been through it, rather than digging through a school website that doesn't mention them.
 
 ## Chunking Strategy
 
-**Chunk size:**
-**Overlap:**
+**Chunk size:** One whole post per chunk (average 317 characters across 88 posts), with a 1200-character cap as a safety net.
+**Overlap:** None.
 
 <!-- What about YOUR documents made you pick these numbers? Short posts and
      long sectioned guides don't want the same chunking, and "800 seemed
@@ -41,6 +42,9 @@
      more than pretending you got it right first time.
 
      Milestone 3. -->
+campus_life posts are short (Milestone 1 showed 88 documents averaging 317 characters, longest 549) and almost always focused on a single topic. Splitting them further would risk cutting a complete thought in half for no real benefit, so I chunk by whole document instead of a fixed character window. The 1200-character cap exists only as a safety net: if a post is ever unusually long, it splits on paragraph breaks instead of mid-sentence, rather than assuming every post stays short forever.
+
+One limitation I found: `money_jobs.txt` blends two topics in one post (on-campus jobs, and a sentence about when work starts affecting coursework), so not every chunk is purely single-topic even with this strategy.
 
 ## Sample Chunks
 
@@ -114,26 +118,32 @@ Laundry costs $1.75 wash, $1.75 dry, app-based. On noise: moderate; the building
      visible. Milestone 4. -->
 
 **Question:**
+Question: Which floor in the library is best for studying?
 
 **Answer:**
+Based on the provided documents, the best floor depends on your study needs:
+- The third floor is silent and enforced (*study_library_hours.txt*).
+- The second floor is quiet in theory (*study_library_hours.txt*).
+- The basement has the only outlets at every seat (*study_library_hours.txt*).
 
-```
-```
+Sources retrieved: housing_aldridge_hall_noise.txt, study_group_rooms.txt, study_library_hours.txt
 
-**My relevance cutoff:**
-
-<!-- The number you set in config.py, and how you got there.
-
-     You ran five questions your corpus covers and the five in OUT_OF_SCOPE
-     that it clearly doesn't, and wrote down the best distance for each. What
-     did those two groups look like? Where was the gap? Put the actual numbers
-     here — the table below wants all ten rows.
-
-     Milestone 4. -->
+**My relevance cutoff:** 0.6 (the starter's default)
 
 | Question | In corpus? | Best distance |
 |---|---|---|
-|  |  |  |
+| How long does my student account stay active for after graduation? | Yes | 0.345 |
+| Can I study during my on-campus job? | Yes | 0.437 |
+| Which floor in the library is best for studying? | Yes | 0.449 |
+| Does withdrawing from a course affect my GPA? | Yes | 0.443 |
+| How many credit hours do I need to graduate? | Yes | 0.305 |
+| What is the capital of Mongolia? | No | 0.825 |
+| How do I write a for loop in Rust? | No | 0.896 |
+| Who won the 1994 World Cup? | No | 0.886 |
+| What is the recommended dosage of ibuprofen for a headache? | No | 0.844 |
+| How do I change the oil in a diesel engine? | No | 0.934 |
+
+All five in-corpus questions landed between 0.305 and 0.449; all five out-of-scope questions landed between 0.825 and 0.934 — a gap of nearly 0.4 with no overlap. I kept the starter's default cutoff of 0.6 since it sits comfortably in the middle of that gap.
 
 ## How I Used AI
 
@@ -147,8 +157,9 @@ Laundry costs $1.75 wash, $1.75 dry, app-based. On noise: moderate; the building
      Milestone 5. -->
 
 **1.**
-
+1. I decided one post = one chunk was the right strategy for campus_life, since Milestone 1 showed most posts were short and single-topic. I asked Claude for a replacement split_documents function implementing that, with a safety cap for unusually long posts. It wrote the function with a 1200-character cap and paragraph-based fallback splitting — I reviewed it against my own chunk-size reasoning before using it, and it re-indexed to the same 88 chunks as before, confirming no post exceeded the cap.
 **2.**
+2. While reviewing my Milestone 4 test question about the best library floor, I noticed the model's answer invented a detail ("rooms 210 and 211 on the second floor") that wasn't in any retrieved chunk, and separately merged an unrelated fact from a dorm-noise document (Aldridge Hall) into a claim about the library. I hadn't caught either issue on my own — Claude pointed them out and helped me rewrite the grounding instruction in generate.py to explicitly forbid inferring unstated details and combining facts across unrelated documents. Retesting confirmed both issues were fixed.
 
 <!-- ── Stretch features ─────────────────────────────────────────────────────
      Doing one? Say so here BEFORE you start. A feature this README never

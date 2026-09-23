@@ -277,10 +277,12 @@ GROUNDING_INSTRUCTION = """You answer questions using only the documents provide
 
 Rules:
 - Use only the information in the documents below. Do not use anything you know from elsewhere.
+- Do not add, infer, or combine details that are not explicitly stated in the documents — for example, do not attribute a detail (like a location, name, or number) to something unless the text says so directly.
+- Each document is about its own subject. Do not combine or merge facts from two different documents into a single claim unless both documents are clearly describing the same subject (the same building, course, or policy).
+- If two documents seem to describe the same kind of thing (like "floor" or "schedule") but for different subjects, treat them separately and say what each one actually refers to.
 - If the documents don't cover the question, say you don't have enough information. Do not guess.
 - Name the document your answer came from, using the filename given in each excerpt.
 - Be brief. Two or three sentences is usually enough."""
-
 
 def build_prompt(question: str, results) -> str:
     """
