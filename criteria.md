@@ -68,11 +68,11 @@ in at least 4 of 5 tries.
           sentence cut in half at either end."
        - "No chunk is shorter than 200 characters, since anything below that
           in my corpus turned out to be a heading with no content under it." -->
-
+At least 4 of 5 chunks sampled at random will discuss a single topic only, with no unrelated topic mixed in.
 
 
 **Why this target:**
-
+Looking at 5 posts early (admin_wifi_and_accounts.txt, money_jobs.txt, study_library_hours.txt, admin_withdraw_dealine.txt, admin_graduation_requirements.txt), most stuck to one clear topic. But money_jobs.txt blurred two — it's framed as being about on-campus jobs, but one sentence ("10 to 12 hours is the point where it stops affecting coursework") is really about academic workload, not the job itself. Since this kind of overlap can happen even in short posts, I'm not expecting a perfect 5/5.
 
 
 ---
@@ -87,10 +87,10 @@ in at least 4 of 5 tries.
      present — anything, as long as it names a number or an observable
      outcome. -->
 
-
+For 4 test questions with a specific numeric answer — credit hours to graduate, account duration after graduation, transcript cost, and transcript delivery time — the system's answer will state the exact number(s), including both the electronic and postal timeframes for the transcript question, not a rounded or vague version.
 
 **Why this target:**
-
+Numeric answers are easy to get subtly wrong — a model might round "120" to "about 120," or mention only the faster transcript option (3 business days) and drop the postal one (10 business days), which is exactly the kind of detail that matters for someone actually mailing something. I chose all 4 of 4 rather than a lower ratio, since these are simple factual lookups from single, short sentences, and a working retrieval system should get exact numbers right consistently, not just most of the time.
 
 
 ---
