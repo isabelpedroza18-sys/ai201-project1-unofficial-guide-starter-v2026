@@ -217,33 +217,27 @@ Criterion 1 ("retrieved chunks contain the answer, 4 of 5") turned out to be the
 ## The Improvement
 
 **What I changed:**
+I added a second chunking strategy, `chunker.py::paragraph_split`, which splits each post at paragraph breaks instead of keeping the whole post as one chunk (a short heading-like first paragraph under 40 characters is merged into the next paragraph, so titles don't become their own near-empty chunks). I indexed this into a separate variant (`paragraph`) using a small script (`reindex_paragraph.py`), so both the original and new chunking exist side by side without deleting either.
 
 **Why I picked it:**
-
-<!-- Connect it to a specific diagnosis above in one sentence. If you can't,
-     you picked a fix because it sounded impressive. -->
+My Unit 1 diagnosis found that `money_jobs.txt` blended two topics into one chunk (on-campus jobs, and a separate sentence about when work starts affecting coursework). Splitting by paragraph directly targets that — separating blended topics into smaller, more focused chunks.
 
 ### Run Log — After
 
-<!-- Same format, same five criteria, three runs each.
-     `python run_eval.py --label after` -->
-
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
 |---|---|---|---|---|---|
-| 1. Retrieved chunk contains the answer | 4 of 5 |  |  |  |  |
-| 2. Every answer names a source | 5 of 5 |  |  |  |  |
-| 3. Gate stops out-of-corpus questions | 4 of 5 |  |  |  |  |
-| 4. | | | | | |
-| 5. | | | | | |
+| 1. Retrieved chunk contains the answer | 4 of 5 | 4/5 | 4/5 | 4/5 | MET |
+| 2. Every answer names a source | 5 of 5 | 4/5 | 4/5 | 4/5 | MISSED |
+| 3. Gate stops out-of-corpus questions | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+
+*(Criteria 4 and 5 were not affected by this change — chunk-topic sampling and numeric questions weren't retested against this variant, since the improvement specifically targeted retrieval for blended-topic posts.)*
 
 **Did it help?**
+Mixed — genuinely, not evasively. It helped exactly where I expected: for "Can I study during my on-campus job?", the paragraph variant retrieved a smaller, focused chunk containing only "Maximum is 20 hours a week... 10 to 12 is the point where it stops affecting coursework" — cleanly separated from the library/dining job info, and the best distance improved slightly (0.437 → 0.413).
 
-<!-- Say plainly whether it did, and how you know. If it made things worse,
-     say that — a change that backfired, honestly reported, earns full credit
-     and is more interesting than one that worked. What matters is that you can
-     tell.
+But it broke something I didn't expect: for "Which floor in the library is best for studying?", the answer changed from a correct, sourced response ("the third floor is silent and enforced") to **"I don't have enough information to answer"** in all 3 runs. The cause: `study_library_hours.txt`'s short title ("Library hours and where to actually sit," 39 characters) got merged with the *hours* paragraph rather than the *floor* paragraph, since it's the first paragraph encountered. This left the floor-specific content in its own smaller chunk that no longer ranked in the top 3 for this question's exact wording — retrieval pulled back the title+hours chunk instead, which doesn't mention floors at all.
 
-     Milestone 4. -->
+So the change helped one already-diagnosed weakness (topic blending) while introducing a new one (a useful chunk isolated so much it stopped being retrieved for a question it used to answer correctly). I know this because I compared the actual generated answer text, not just distances — the "after" run for Q3 explicitly refused to answer where the "before" run didn't.
 
 ## What's Still Broken
 
