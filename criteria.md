@@ -25,6 +25,20 @@ contains the answer.
 **Why this target:**
 When I ran all 5 of my test questions, each one retrieved a chunk that directly contained the answer, with distances ranging from 0.305 to 0.449 — all well under my 0.6 cutoff. I set the target at 4 of 5 rather than 5 of 5 because one of my questions (library floor) pulled back some only loosely related chunks alongside the correct one, showing retrieval isn't perfectly precise even when it succeeds — so I want a little room in case a future test question turns out harder than these five.
 
+> **Revised in unit 2:** For at least 4 of my 5 test questions, the answer
+> appears in the single best-ranked (rank #1) retrieved chunk — not merely
+> somewhere in the top 3.
+>
+> **Why revised:** My original target only asked whether the answer showed
+> up anywhere in the top 3 results, which meant a correct chunk ranked 2nd
+> or 3rd behind irrelevant material would still count as a pass. I checked
+> using `python app.py retrieve "..."` and found the correct source ranked
+> #1 for all 5 of my 5 questions (distances 0.305–0.449), meaning the
+> original target was never really at risk of failing — my system's
+> retrieval turned out to be stronger than the criterion required. The
+> tighter version actually tests whether retrieval ranks the right chunk
+> first, which is closer to what "working" should mean.
+
 ---
 
 ## 2. Every answer names a source

@@ -200,42 +200,19 @@ All five in-corpus questions landed between 0.305 and 0.449; all five out-of-sco
 
 ## Verdicts
 
-<!-- MET or MISSED for each of the five, against the target you wrote last
-     unit — not a new one. Plus a sentence on how you decided. That sentence
-     matters most where it was close.
-
-     If your target said 4 of 5 and your runs came out 4, 3, 4, that's a MISS.
-     The target has to hold, not show up occasionally.
-
-     Milestone 2. -->
-
 | # | Criterion | Verdict | How I decided |
 |---|---|---|---|
-| 1 |  |  |  |
-| 2 |  |  |  |
-| 3 |  |  |  |
-| 4 |  |  |  |
-| 5 |  |  |  |
+| 1 | Retrieved chunks contain the answer | MET | All 5 test questions retrieved a chunk containing the correct answer, exceeding the 4/5 target. |
+| 2 | Every answer names a source | MET | All 15 generated answers (5 questions × 3 runs) named at least one source document. |
+| 3 | Gate stops out-of-corpus questions | MET | The gate refused all 5 out-of-scope questions, exceeding the 4/5 target. |
+| 4 | Chunks discuss a single topic | MET | Of 5 sampled chunks (the same 5 each time, since `app.py chunks` isn't randomized), all discussed a single topic. Counting the known exception found in Unit 1 (`money_jobs.txt`, which blends jobs and coursework workload), 5 of 6 chunks checked overall discuss a single topic — still above the 4/5 target. |
+| 5 | Numeric answers stated exactly | MET | All 4 numeric questions (credit hours, account duration, transcript cost, transcript delivery) stated the exact number(s) correctly across all 3 runs each (12 of 12). |
 
 ## Diagnoses
 
-<!-- For each miss: which stage caused it, and how. The stage alone isn't
-     enough — you need the mechanism.
+I missed nothing — all 5 criteria were MET on every run. Rather than treat this as the system being flawless, I looked honestly at whether my targets were set too low.
 
-     Not a diagnosis: "Question 3 didn't work."
-     A diagnosis:     "Question 3 asks about laundry costs. The answer is in
-                       one sentence that got split across two chunks, so
-                       neither chunk on its own contains it."
-
-     The five stages: loading → chunking → embedding → retrieval → generation.
-
-     Look for a pattern. If three misses all ask about numbers, that's one
-     problem, not three.
-
-     Missed nothing? Say so, then say honestly whether your targets were set
-     low, and which one you'd tighten and to what.
-
-     Milestone 3. -->
+Criterion 1 ("retrieved chunks contain the answer, 4 of 5") turned out to be the safest target of the five: when I checked with `python app.py retrieve`, the correct source document ranked #1 for all 5 of my questions, meaning the original criterion (answer appears anywhere in top 3) was never genuinely at risk of failing. I revised it in `criteria.md` to require the answer's source to be the single top-ranked chunk, which is a meaningfully harder bar and one my system still happens to clear — but at least now the criterion is actually testing something.
 
 ## The Improvement
 
