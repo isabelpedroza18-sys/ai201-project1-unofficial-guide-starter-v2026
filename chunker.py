@@ -82,38 +82,24 @@ def fallback_split(
 
 def split_documents(documents: list[Document]) -> list[Chunk]:
     """
-    Split documents into chunks. ⚠️ REPLACE THE BODY OF THIS IN MILESTONE 3.
-
-    Right now it just calls the fallback. That is the plain, generic behaviour
-    the brief is talking about.
-
-    When you write your own strategy, set `produced_by` to
-    "chunker.py::split_documents" so your README's Sample Chunks section names
-    the right function. `app.py chunks` prints that string for you.
-
-    Things worth thinking about before you write any code:
-      - Are your documents short posts or long guides?
-      - Is the useful information in one sentence, or spread over a paragraph?
-      - Would splitting on paragraph breaks keep more thoughts intact than
-        splitting on a character count?
-    """
-    """
     Chunking strategy for campus_life: one whole post is one chunk.
 
     campus_life posts are short (Milestone 1 showed 88 documents averaging
     317 characters, longest 549) and almost always about a single topic.
     Splitting them further would cut a complete thought in half for no
-    benefit. A generous cap (1200 characters) exists only as a safety net —
-    if a post is unusually long, it splits on paragraph breaks instead of
-    mid-sentence, rather than assuming every post stays short forever.
+    benefit. A generous cap (config.MAX_CHUNK_SIZE, 1200 characters) exists
+    only as a safety net — if a post is unusually long, it splits on
+    paragraph breaks instead of mid-sentence, rather than assuming every post
+    stays short forever. This paragraph-splitting branch has not been
+    exercised by any real campus_life document (none exceed the cap) — see
+    the manual check at the bottom of this file, under `if __name__`.
     """
-    max_chunk_size = 1200
     chunks: list[Chunk] = []
 
     for doc in documents:
         text = doc.text.strip()
 
-        if len(text) <= max_chunk_size:
+        if len(text) <= config.MAX_CHUNK_SIZE:
             chunks.append(
                 Chunk(
                     text=text,
@@ -138,7 +124,6 @@ def split_documents(documents: list[Document]) -> list[Chunk]:
 
     return chunks
 
-
 def describe(chunks: list[Chunk]) -> str:
     """A one-line summary, printed after indexing."""
     if not chunks:
@@ -157,3 +142,20 @@ if __name__ == "__main__":
 
     chunks = split_documents(load_documents())
     print(describe(chunks))
+
+    # Manual check: does the paragraph-splitting safety net actually work?
+    # No real campus_life document exceeds MAX_CHUNK_SIZE, so this branch
+    # never runs otherwise. Force it with a hand-made long document.
+    print("\n--- Testing the oversized-document fallback branch ---")
+    fake_long_doc = Document(
+        source="fake_long_post.txt",
+        text=("First paragraph, well over the cap on its own. " * 20)
+        + "\n\n"
+        + ("Second paragraph, also long enough to matter. " * 20),
+    )
+    test_chunks = split_documents([fake_long_doc])
+    print(f"Input length: {len(fake_long_doc.text)} chars "
+          f"(cap is {config.MAX_CHUNK_SIZE})")
+    print(f"Produced {len(test_chunks)} chunks:")
+    for c in test_chunks:
+        print(f"  {c.label}: {len(c.text)} chars")

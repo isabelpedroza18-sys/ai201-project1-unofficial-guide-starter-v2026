@@ -29,7 +29,8 @@ CORPUS = os.getenv("AI201_CORPUS", "campus_life")
 
 CHUNK_SIZE = 800        # characters per chunk
 CHUNK_OVERLAP = 120     # characters shared between neighbouring chunks
-
+MAX_CHUNK_SIZE = 1200   #safety cap for split_documents; posts longer than this
+                        # split on paragraph breaks instead of staying whole
 
 # ─── Retrieval (Milestone 4) ─────────────────────────────────────────────────
 
