@@ -161,6 +161,8 @@ All five in-corpus questions landed between 0.305 and 0.449; all five out-of-sco
 **2.**
 2. While reviewing my Milestone 4 test question about the best library floor, I noticed the model's answer invented a detail ("rooms 210 and 211 on the second floor") that wasn't in any retrieved chunk, and separately merged an unrelated fact from a dorm-noise document (Aldridge Hall) into a claim about the library. I hadn't caught either issue on my own — Claude pointed them out and helped me rewrite the grounding instruction in generate.py to explicitly forbid inferring unstated details and combining facts across unrelated documents. Retesting confirmed both issues were fixed.
 
+**3.** While comparing before/after run logs in unit 2, I noticed Q3's answer changed from correct to a refusal after my chunking change, but I hadn't diagnosed why. I asked Claude to help trace the cause, and together we used `app.py retrieve` to inspect the actual retrieved chunks — which showed the "third floor" content had been merged with the wrong paragraph during splitting, isolating it into a chunk that no longer ranked in the top 3. Claude helped me write up the mechanism precisely; the diagnosis itself came from reading the actual retrieved text side by side.
+
 <!-- ── Stretch features ─────────────────────────────────────────────────────
      Doing one? Say so here BEFORE you start. A feature this README never
      claims earns nothing.
@@ -241,17 +243,10 @@ So the change helped one already-diagnosed weakness (topic blending) while intro
 
 ## What's Still Broken
 
-<!-- For each criterion still missed after your fix: what you'd do about it,
-     and why you stopped where you did.
+The paragraph-splitting improvement broke retrieval for "Which floor in the library is best for studying?" — the answer that used to correctly name the third floor now refuses to answer, in all 3 runs, because the relevant content got split away from the study_library_hours.txt title into a chunk that no longer ranks in the top 3 for this question's wording.
 
-     "I ran out of time" is fine if it's true. Pretending nothing is left is
-     not.
-
-     Milestone 5. -->
+What I'd do about it: adjust the heading-merge rule in `paragraph_split` so a short title merges with whichever following paragraph is more central to the post's likely topic, not just the first one it encounters — or lower the 40-character merge threshold so titles merge with every paragraph that follows, not just the next one. I stopped here because of time — this is a real, fixable case, not a fundamental flaw in the approach, but tracking down the right merge heuristic and re-testing would take another testing cycle I didn't have time for in this unit.
 
 ## What I'd Do Differently
 
-<!-- Knowing what you know now — which of your five criteria would you write
-     differently, and why?
-
-     Milestone 5. -->
+I'd write Criterion 4 (chunk single-topic check) to specify a real random sample rather than relying on `app.py chunks -n 5`, since that command isn't actually randomized — it returned the identical 5 chunks both times I ran it in Unit 1 and Unit 2, which meant my "sampled at random" language wasn't quite accurate to what I tested. I'd also add a criterion in Unit 1 that's specifically about consistency across chunking strategies — something like "swapping chunking strategies doesn't break previously-correct answers" — since that's exactly the kind of regression Milestone 4 surfaced, and I had no criterion written ahead of time that would have caught it as a real target to protect.
