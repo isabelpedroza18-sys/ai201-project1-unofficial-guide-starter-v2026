@@ -178,27 +178,28 @@ All five in-corpus questions landed between 0.305 and 0.449; all five out-of-sco
 
 ## Run Log — Before
 
-<!-- Your five criteria, three runs each. `python run_eval.py --label before`
-     runs the questions, puts the OUT_OF_SCOPE ones through the gate, and
-     writes it all into results/ for you. Targets come from criteria.md; the
-     verdict column is your call.
-
-     Criterion 3 is measured in one deterministic pass rather than three, so
-     the same number goes in all three run columns. That's correct, not lazy.
-
-     Milestone 1. -->
-
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
 |---|---|---|---|---|---|
-| 1. Retrieved chunk contains the answer | 4 of 5 |  |  |  |  |
-| 2. Every answer names a source | 5 of 5 |  |  |  |  |
-| 3. Gate stops out-of-corpus questions | 4 of 5 |  |  |  |  |
-| 4. | | | | | |
-| 5. | | | | | |
+| 1. Retrieved chunk contains the answer | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 2. Every answer names a source | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 3. Gate stops out-of-corpus questions | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 4. Chunks discuss a single topic | 4 of 5 | 5/5* | 5/5* | 5/5* | MET |
+| 5. Numeric answers stated exactly | 4 of 4 | 4/4 | 4/4 | 4/4 | MET |
+
+\* Chunk sampling isn't run-dependent (it's not tied to the 3 model-call runs) and `app.py chunks -n 5` isn't randomized, so this number reflects the single sample discussed in Milestone 2 (5 of 5 sampled chunks single-topic; counting the known `money_jobs.txt` exception found in Unit 1, the honest fuller picture is 5 of 6). See Diagnoses for detail.
 
 <!-- Underneath, paste the REAL output for each criterion from one of your
      runs — the actual text your system produced, not a description of it.
      Name the file and function that produced it. -->
+Real output for each criterion is in `results/run_2026-09-29_1637_before.md` (criteria 1, 2, 3, produced by `run_eval.py::main` and `run_eval.py::check_out_of_scope`) and `results/transcript_questions_criterion5.md` (criterion 5's two supplementary questions, produced by manual runs of `app.py::cmd_ask`). Sample below:
+
+**Criterion 1/2 example** (question: "How long does my student account stay active for after graduation?", run 1):
+Your student account stays active for six months after you graduate.
+Source: admin_wifi_and_accounts.txt
+
+**Criterion 3 example** (out-of-scope question: "What is the capital of Mongolia?"):
+I don't have enough information about that.
+(best distance 0.825, refused before reaching the model — 0 model calls)
 
 ## Verdicts
 
