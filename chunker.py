@@ -124,6 +124,45 @@ def split_documents(documents: list[Document]) -> list[Chunk]:
 
     return chunks
 
+def paragraph_split(documents: list[Document]) -> list[Chunk]:
+    """
+    Alternative chunking strategy, built in unit 2: split each post at
+    paragraph breaks instead of keeping the whole post as one chunk.
+
+    Tests whether this separates blended topics more cleanly than
+    split_documents — money_jobs.txt was flagged in unit 1 as mixing
+    on-campus jobs with a sentence about coursework workload, all in one
+    chunk. A short heading-like first paragraph (under 40 characters) is
+    merged into the paragraph after it, so a one-line title doesn't become
+    its own near-empty chunk.
+    """
+    chunks: list[Chunk] = []
+    for doc in documents:
+        text = doc.text.strip()
+        paragraphs = [p.strip() for p in text.split("\n\n") if p.strip()]
+
+        merged: list[str] = []
+        i = 0
+        while i < len(paragraphs):
+            para = paragraphs[i]
+            if len(para) < 40 and i + 1 < len(paragraphs):
+                merged.append(para + "\n\n" + paragraphs[i + 1])
+                i += 2
+            else:
+                merged.append(para)
+                i += 1
+
+        for idx, para in enumerate(merged):
+            chunks.append(
+                Chunk(
+                    text=para,
+                    source=doc.source,
+                    index=idx,
+                    produced_by="chunker.py::paragraph_split",
+                )
+            )
+    return chunks
+
 def describe(chunks: list[Chunk]) -> str:
     """A one-line summary, printed after indexing."""
     if not chunks:
